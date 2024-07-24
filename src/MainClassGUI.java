@@ -1,4 +1,6 @@
+
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -123,15 +125,13 @@ public class MainClassGUI extends Application {
             }
         });
 
-        // Add all elements to layout and set the scene
-        VBox layout = new VBox(10);
-        layout.getChildren().addAll(arraySizeInput, arrayElementsInput, algorithmChoice, targetNumberInput, executeButton, resultLabel);
-        Scene scene = new Scene(layout, 300, 300);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-}
+        // Create a button to generate random array
+        Button generateRandomArrayButton = new Button("Generate Random Array");
+        generateRandomArrayButton.setOnAction(e -> {
+            int arraySize = Integer.parseInt(arraySizeInput.getText());
+            int[] arr = new int[arraySize];
+            for (int i = 0; i < arraySize; i++) {
+                arr[i] = (int) (Math.random() * 100);
+            }
+            arrayElementsInput.setText(Arrays.toString(arr).replaceAll("\\[|\\]|,", ""));
+        });
