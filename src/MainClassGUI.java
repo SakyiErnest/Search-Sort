@@ -139,8 +139,8 @@ public class MainClassGUI extends Application {
                     arr[i] = (int) (Math.random() * 100);
                 }
                 arrayElementsInput.setText(Arrays.toString(arr)
-                    .replaceAll("\\[|\\]", "")
-                    .replaceAll(",", " "));
+                        .replaceAll("\\[|\\]", "")
+                        .replaceAll(",", " "));
             } catch (NumberFormatException ex) {
                 showError("Please enter a valid array size");
             }
@@ -159,7 +159,7 @@ public class MainClassGUI extends Application {
 
         Label resultTitle = new Label("Result");
         resultTitle.setFont(Font.font("System", FontWeight.BOLD, 16));
-        
+
         Label resultLabel = new Label("Execute an algorithm to see results");
         resultLabel.setWrapText(true);
 
@@ -186,7 +186,7 @@ public class MainClassGUI extends Application {
                 }
 
                 String result = executeAlgorithm(arr, algorithm, targetNumberInput);
-                
+
                 // Animate result update
                 FadeTransition fade = new FadeTransition(Duration.millis(300), resultLabel);
                 fade.setFromValue(0);
@@ -212,7 +212,7 @@ public class MainClassGUI extends Application {
         // Create scene with styling
         Scene scene = new Scene(mainContainer, 800, 600);
         scene.getStylesheets().add("data:text/css," + MODERN_STYLE.replaceAll("\n", ""));
-        
+
         // Configure and show stage
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(850);
@@ -220,10 +220,29 @@ public class MainClassGUI extends Application {
         primaryStage.show();
     }
 
+    private String getTimeComplexity(String algorithm) {
+        return switch (algorithm) {
+            case "Selection Sort" -> "O(n²) - Quadratic time";
+            case "Insertion Sort" -> "O(n²) - Quadratic time, O(n) for nearly sorted arrays";
+            case "Quick Sort" -> "O(n log n) average case, O(n²) worst case";
+            case "Merge Sort" -> "O(n log n) - Consistent performance";
+            case "Radix Sort" -> "O(d * n) where d is the number of digits";
+            case "Linear Search" -> "O(n) - Linear time";
+            case "Binary Search" -> "O(log n) - Logarithmic time";
+            default -> "Unknown";
+        };
+    }
+
     private String executeAlgorithm(int[] arr, String algorithm, TextField targetNumberInput) {
         int[] originalArray = arr.clone();
         String result;
-        
+
+        // Get theoretical time complexity
+        String timeComplexity = getTimeComplexity(algorithm);
+
+        // Measure execution time
+        long startTime = System.nanoTime();
+
         switch (algorithm) {
             case "Selection Sort":
                 SelectionSort.selectionSort(arr);
@@ -248,15 +267,24 @@ public class MainClassGUI extends Application {
             case "Linear Search":
             case "Binary Search":
                 int target = Integer.parseInt(targetNumberInput.getText());
-                int searchResult = algorithm.equals("Linear Search") 
-                    ? LinearSearch.linearSearch(arr, target)
-                    : BinarySearch.binarySearch(arr, target);
+                int searchResult = algorithm.equals("Linear Search")
+                        ? LinearSearch.linearSearch(arr, target)
+                        : BinarySearch.binarySearch(arr, target);
                 result = formatSearchResult(arr, target, searchResult, algorithm);
                 break;
             default:
                 result = "Invalid algorithm selection";
         }
-        return result;
+
+        // Calculate execution time
+        long endTime = System.nanoTime();
+        double executionTime = (endTime - startTime) / 1_000_000.0; // Convert to milliseconds
+
+        // Add complexity and timing information to result
+        return result + String.format("""
+                
+                Time Complexity: %s
+                Execution Time: %.2f ms""", timeComplexity, executionTime);
     }
 
     private String formatSortResult(int[] original, int[] sorted, String algorithm) {
